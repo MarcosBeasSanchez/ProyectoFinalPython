@@ -1,0 +1,30 @@
+ALVARO-->
+Creación de la interface de usuario con tkinter y frames.
+Trabajo con procesos.
+• Utilización de Clases generadas en documentos diferentes.
+        ◦ Herencia de clases.
+        ◦ Sobrescribir métodos.
+
+Generar informes en formato pdf desde un environment con diferentes plantillas
+
+
+---------
+
+DIEGO-->
+
+Conexión a una Base de Datos.
+Envío de correos electrónicos.
+Trabajo con procesos.
+
+• Utilización de Clases generadas en documentos diferentes.
+        ◦ Herencia de clases.
+        ◦ Sobrescribir métodos.
+---------
+
+MARCOS-->
+
+Trabajo con procesos.
+Utilización de MathPlotLib.
+• Utilización de Clases generadas en documentos diferentes.
+        ◦ Herencia de clases.
+        ◦ Sobrescribir métodos.
