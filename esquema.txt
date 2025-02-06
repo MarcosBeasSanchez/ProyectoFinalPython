@@ -1,5 +1,5 @@
 TABLA EMPLEADOS
-    ID_Empleado (clave primaria)-string
+    ID (clave primaria)-string
     Nombre-string
     Apellidos-string
     DNI-string
@@ -9,13 +9,13 @@ TABLA EMPLEADOS
     comision-Float
 -------------------
 TABLA JEFES
-    ID_Jefe (clave primaria)
+    ID (clave primaria)
     Nombre-string
     Apellidos-string
     sueldo-float
 -------------------
 TABLA CLIENTES
-    ID_Cliente (clave primaria)
+    ID (clave primaria)
     NIF-string
     Nombre-string
     Apellidos-string
