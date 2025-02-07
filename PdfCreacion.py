@@ -23,6 +23,7 @@ class Pdf():
         self.rutaPdf+=nombrePdf+".pdf"
         self.rutaWkhtml="/usr/bin/wkhtmltopdf"
         self.options = {
+            'enable-local-file-access':'',
             'page-size': 'letter',
             'margin-top': '0.05in',
             'margin-bottom': '0.05in',

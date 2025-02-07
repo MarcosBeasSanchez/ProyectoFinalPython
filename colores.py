@@ -8,6 +8,7 @@ class ColoresAplicacion():
         self.Color_Boton_Secundario="green"
         self.Color_Boton_Tercero="#E53935"
         self.Color_Boton_Cuarto="#757575"
+       
 
     def get_Color_Cabecera_Principal(self):
         return self.Color_Cabecera_Principal
