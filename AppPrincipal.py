@@ -22,7 +22,7 @@ def verificar_id():
         messagebox.showerror("Acceso Denegado", "No tienes permisos para acceder.")
 
 def abrir_frames():
-    ventana_principal = VentanaPrincipal(1000, 800, 700, 700, "Proyecto Final SGE 2ºDAM")
+    ventana_principal = VentanaPrincipal(800, 600, 700, 700, "Proyecto Final SGE 2ºDAM")
     ventana_principal.mainloop()
 
 root = tk.Tk()
