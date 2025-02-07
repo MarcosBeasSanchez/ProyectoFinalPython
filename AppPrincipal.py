@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 import mysql.connector
+from frames import VentanaPrincipal
 
 def verificar_id():
     id_ingresada = entrada_id.get()
@@ -21,10 +22,7 @@ def verificar_id():
         messagebox.showerror("Acceso Denegado", "No tienes permisos para acceder.")
 
 def abrir_frames():
-    ventana_principal = tk.Tk()
-    ventana_principal.title("Panel de Jefe")
-    ventana_principal.geometry("400x300")
-    tk.Label(ventana_principal, text="Bienvenido al panel de jefes").pack()
+    ventana_principal = VentanaPrincipal(1000, 800, 700, 700, "Proyecto Final SGE 2ºDAM")
     ventana_principal.mainloop()
 
 root = tk.Tk()
