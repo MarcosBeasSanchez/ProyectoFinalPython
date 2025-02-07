@@ -33,7 +33,7 @@ class GeneradorGrafico:
         # Guardar y mostrar la gráfica
         graph_route = "./grafico.png"
         plt.savefig(graph_route)
-        plt.show()
+        #plt.show()
         plt.clf()
         
         return graph_route

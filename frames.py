@@ -3,6 +3,7 @@ from tkinter import ttk, messagebox
 import mysql.connector
 from colores import ColoresAplicacion
 from text import Texto
+from generadorGrafico import GeneradorGrafico 
 
 class VentanaPrincipal(tk.Tk):
     def __init__(self, weight, height, x, y, title):
@@ -64,7 +65,6 @@ class VentanaPrincipal(tk.Tk):
         def guardar_empleado():
             datos = [entries[label].get() for label in labels]
             try:
-               
                 conn = mysql.connector.connect(user="root", password="1234", host="localhost", database="proyectofn")
                 cursor = conn.cursor()
                 cursor.execute("INSERT INTO EMPLEADOS VALUES (%s, %s, %s, %s, %s, %s, %s, %s)", datos)
@@ -157,7 +157,26 @@ class VentanaPrincipal(tk.Tk):
 
     def cargarGrafica(self):
         self.clear_frame()
-        tk.Label(self.principal, text="Aquí irá la gráfica", font=("Arial", 16)).pack(pady=20)
+        tk.Label(self.principal, text="Gráfica"  ,font=("Arial", 16, "bold") ).pack(pady=20)
+
+        #conn = mysql.connector.connect(user="root", password="1234", host="localhost", database='proyectofn')
+        #cursor = conn.cursor()
+        #sumagastos de los trabajadores
+        #sumSueldoTrabajaores = cursor.execute("SELECT SUM(sueldo) FROM Empleado")
+        #sumagastos de los clientes
+        #sumGastosClientes = cursor.execute("SELECT SUM(cartera) FROM Cliente")
+        #Tags de  la grafica
+
+        tags = ["INGRESOS TRABAJADORES", "GASTOS CLIENTES"]
+
+        # Crear un objeto de la clase GeneradorGrafico(ingresos, gastos, tags)
+        generador = GeneradorGrafico(100,200,tags)
+        # Llamar al método crearGrafico
+        generador.crearGrafico()
+        generador.display_graph_in_frame(self.principal, "./grafico.png")        
+
+        
+
 
     def mandarCorreo(self):
         self.clear_frame()
