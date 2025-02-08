@@ -3,7 +3,7 @@ from tkinter import PhotoImage
 from colores import ColoresAplicacion
 from text import Texto
 from correo import Correo
-import os
+
 from PdfCreacion import Pdf
 class VentanaPrincipal(tk.Tk):
     def __init__(self, weight, height, x, y, title):
@@ -21,8 +21,10 @@ class VentanaPrincipal(tk.Tk):
 
 
     def cargarBBDD(self):
+        self.clear_frame()
         print("hola")
     def cargarGrafica(self):
+        self.clear_frame()
         print("hola")
     def mandarCorreo(self):
         self.clear_frame()
@@ -76,7 +78,7 @@ class VentanaPrincipal(tk.Tk):
         return textarea
     
     def enviar_info(self):
-
+        
         #Hacer un if y archivos que necesitemos
         ruta1 = Pdf.darLaRutaMenosLaUltima("") + "indexprimario.html"
         ruta2 = Pdf.darLaRutaMenosLaUltima("") + "indexsecundario.html"
@@ -91,7 +93,8 @@ class VentanaPrincipal(tk.Tk):
         )
         
     def mostrarCreditos(self):
-        print("hola")   
+        self.clear_frame()
+        Texto(self.principal,"Hecho por: Álvaro,Marcos Beas,Diego","Monserrat",20,"top","#007BFF","bold") 
 
     def Cajas(self):
         borde_color = self.color.Color_Cabecera_Principal 
