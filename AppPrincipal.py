@@ -10,20 +10,17 @@ def verificar_id():
     cursor = conn.cursor()
     
     cursor.execute("SELECT COUNT(*) FROM JEFES WHERE ID = %s", (id_ingresada,))
-    resultado = cursor.fetchone()
+    resultado = cursor.fetchone() #Cojemos la Primera linea para comprobar abajo si hay
     
     conn.close()
     
-    if resultado and resultado[0] > 0:
+    if resultado: #Si exsite el jefe accede a la pagina por los frames
         messagebox.showinfo("Acceso Concedido", "Bienvenido, Jefe.")
         root.destroy()
-        abrir_frames()
+        ventana_principal = VentanaPrincipal(800, 600, 700, 700, "Proyecto Final SGE 2ºDAM")
+        ventana_principal.mainloop()
     else:
         messagebox.showerror("Acceso Denegado", "No tienes permisos para acceder.")
-
-def abrir_frames():
-    ventana_principal = VentanaPrincipal(800, 600, 700, 700, "Proyecto Final SGE 2ºDAM")
-    ventana_principal.mainloop()
 
 root = tk.Tk()
 root.title("Inicio de Sesión")

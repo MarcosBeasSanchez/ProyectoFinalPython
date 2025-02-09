@@ -1,8 +1,12 @@
 import tkinter as tk
-from tkinter import ttk, messagebox
-import mysql.connector
 from colores import ColoresAplicacion
 from text import Texto
+from correo import Correo
+from tkinter import ttk, messagebox
+import mysql.connector
+from PdfCreacion import Pdf
+#from GeneradorGrafica import GeneradorGrafico 
+
 
 class VentanaPrincipal(tk.Tk):
     def __init__(self, weight, height, x, y, title):
@@ -12,20 +16,16 @@ class VentanaPrincipal(tk.Tk):
         self.x = x
         self.y = y
         self.miTitulo = title
-        self.color = ColoresAplicacion()
-        self.geometry(f"{self.weight}x{self.height}+{self.x}+{self.y}")
+        self.color=ColoresAplicacion()
+        self.geometry("%dx%d+%d+%d" %(self.weight, self.height, self.x, self.y))
         self.title(self.miTitulo)
         self.resizable(False, False)
         self.Cajas()
 
-    def clear_frame(self):
-        """Limpia el contenido de la sección principal."""
-        for widget in self.principal.winfo_children():
-            widget.destroy()
 
     def cargarBBDD(self):
-        """Abre el formulario en el área principal en lugar de una ventana emergente."""
-        self.clear_frame()  # Limpiar el área central antes de agregar un nuevo formulario
+        
+        self.clear_frame()  
 
         tk.Label(self.principal, text="Seleccione tipo de registro:", font=("Arial", 14)).pack(pady=10)
 
@@ -53,6 +53,7 @@ class VentanaPrincipal(tk.Tk):
         labels = ["ID", "Nombre", "Apellidos", "DNI", "Teléfono", "Fecha Contratación", "Sueldo", "Comisión"]
         entries = {}
 
+        #Un for de label, donde coges una lista con la info y la vas escribiendo una por una para guardar el resultado en otra lista
         for label in labels:
             frame = tk.Frame(self.principal)
             frame.pack(pady=5)
@@ -64,7 +65,6 @@ class VentanaPrincipal(tk.Tk):
         def guardar_empleado():
             datos = [entries[label].get() for label in labels]
             try:
-               
                 conn = mysql.connector.connect(user="root", password="1234", host="localhost", database="proyectofn")
                 cursor = conn.cursor()
                 cursor.execute("INSERT INTO EMPLEADOS VALUES (%s, %s, %s, %s, %s, %s, %s, %s)", datos)
@@ -110,55 +110,10 @@ class VentanaPrincipal(tk.Tk):
 
         tk.Button(self.principal, text="Guardar", command=guardar_cliente).pack(pady=10)
 
-    def Cajas(self):
-        borde_color = self.color.Color_Cabecera_Principal
-        borde_grosor = 1
-
-        self.cabecera = tk.Frame(self, bg=self.color.get_Color_Cabecera_Principal(), height=70,
-                                 highlightbackground=borde_color, highlightcolor=borde_color,
-                                 highlightthickness=borde_grosor, bd=3, relief="ridge")
-        self.cabecera.pack(side=tk.TOP, fill="both")
-
-        self.pie = tk.Frame(self, bg=self.color.get_Color_Pie_Pagina(), height=60,
-                            highlightbackground=borde_color, highlightcolor=borde_color,
-                            highlightthickness=borde_grosor, bd=3, relief="ridge")
-        self.pie.pack(side=tk.BOTTOM, fill="x")
-
-        self.izquierda = tk.Frame(self, bg=self.color.get_Color_Laterales(), width=120,
-                                  highlightbackground=borde_color, highlightcolor=borde_color,
-                                  highlightthickness=borde_grosor, bd=3, relief="ridge")
-        self.izquierda.pack(side=tk.LEFT, fill="y")
-
-        self.derecha = tk.Frame(self, bg=self.color.get_Color_Laterales(), width=120,
-                                highlightbackground=borde_color, highlightcolor=borde_color,
-                                highlightthickness=borde_grosor, bd=3, relief="ridge")
-        self.derecha.pack(side=tk.RIGHT, fill="y")
-
-        self.principal = tk.Frame(self, bg=self.color.get_Color_Principal(), width=300, height=200,
-                                  highlightbackground=borde_color, highlightcolor=borde_color,
-                                  highlightthickness=borde_grosor, bd=3, relief="ridge")
-        self.principal.pack(side=tk.TOP, expand=True, fill="both")
-
-        Texto(seccion=self.cabecera, texto="Aplicacion principla Jefe ||| DAM",
-              fuente="Monserrat", tamanio=18, posicion="top", color="white", bold="bold")
-
-
-        # Botones del menú inferior
-        botones = [
-            ("BBDD", self.cargarBBDD, self.color.Color_Boton_Primario),
-            ("Gráfica", self.cargarGrafica, self.color.Color_Boton_Secundario),
-            ("Correo", self.mandarCorreo, self.color.Color_Boton_Tercero),
-            ("Créditos", self.mostrarCreditos, self.color.Color_Boton_Cuarto)
-        ]
-
-        for texto, comando, color in botones:
-            btn = tk.Button(self.pie, text=texto, bg=color, font=("Montserrat", 15, "bold"), fg="white", width=10, command=comando)
-            btn.pack(side=tk.LEFT, padx=10, pady=5, expand=True, fill="both")
-
     def cargarGrafica(self):
         self.clear_frame()
-        tk.Label(self.principal, text="Aquí irá la gráfica", font=("Arial", 16)).pack(pady=20)
 
+        
     def mandarCorreo(self):
         self.clear_frame()
         # Configuración de estilo
@@ -168,52 +123,215 @@ class VentanaPrincipal(tk.Tk):
         self.entry_bg = "#FFFFFF"  # Entradas de texto blancas
         self.button_color = "#007BFF"  # Azul moderno
         self.button_PorEncima = "#0056b3"  # Azul oscuro
-        self.font_style = ("Monserrat", 15)
-        self.entry_width = 15
-        self.pad_y = 10
-        self.pad_x = 20
+        self.font_style = ("Monserrat", 10)  
+        self.entry_width = 10  
+        self.pad_y = 8  
+        self.pad_x = 16  
         
         
         # Crear campos
         self.origen = self.crear_label_entry("Origen")
         self.contrasenia = self.crear_label_entry("Contraseña", show="*")
         self.destinatario = self.crear_label_entry("Destinatario")
-        self.asunto = self.crear_label_entry("Asunto")
+        self.asunto = self.crear_label_entry("Asunto","")
         self.contenido =self.crear_label_textarea("Contenido")
-        
-        # Botón de enviar
+      
         self.boton_enviar = tk.Button(
             self.principal, text="Enviar Correo", font=self.font_style,
             bg=self.button_color, fg="white", activebackground=self.button_PorEncima, activeforeground="white",
             padx=10, pady=5, command=self.enviar_info
-        )
-        self.boton_enviar.pack(side=tk.TOP, pady=self.pad_y * 2)
+            )
+        self.boton_enviar.pack(side=tk.TOP, pady=self.pad_y * 2)   
+
 
     def crear_label_entry(self, texto, show=None):
-        frame = tk.Frame(self.principal, bg=self.bg_color)
-        frame.pack(side=tk.TOP, pady=self.pad_y, fill=tk.X)
-        
-        label = tk.Label(frame, text=texto, font=self.font_style, bg=self.bg_color, fg=self.button_color, anchor="w")
-        label.pack(side=tk.TOP, fill=tk.X)
-        
-        entry = tk.Entry(frame, font=self.font_style, width=self.entry_width, bg= self.entry_bg, fg=self.fg_color, show=show)
-        entry.pack(side=tk.TOP, fill=tk.X, pady=(2, 0))
-        return entry
-    def crear_label_textarea(self, texto):
-        frame =tk.Frame(self.principal, bg=self.bg_color)
-        frame.pack(side=tk.TOP, pady=self.pad_y, fill=tk.X)
-        
-        label = tk.Label(frame, text=texto, font=self.font_style, bg=self.bg_color, fg=self.button_color, anchor="w")
-        label.pack(side=tk.TOP, fill=tk.X)
-        
-        textarea = tk.Text(frame, font=self.font_style, width=self.entry_width, height=5, bg=self.entry_bg, fg=self.fg_color)
-        textarea.pack(side=tk.TOP, fill=tk.X, pady=(2, 0))
-        return textarea
+            frame = tk.Frame(self.principal, bg=self.bg_color)
+            frame.pack(side=tk.TOP, pady=self.pad_y, fill=tk.X)
+            
+            label = tk.Label(frame, text=texto, font=self.font_style, bg=self.bg_color, fg=self.button_color, anchor="w")
+            label.pack(side=tk.TOP, fill=tk.X)
+            
+            entry = tk.Entry(frame, font=self.font_style, width=self.entry_width, bg= self.entry_bg, fg=self.fg_color, show=show)
+            entry.pack(side=tk.TOP, fill=tk.X, pady=(1, 0))
+            return entry
+    def crear_label_textarea(self, texto=""):
+            frame =tk.Frame(self.principal, bg=self.bg_color)
+            frame.pack(side=tk.TOP, pady=self.pad_y, fill=tk.X)
+            
+            label = tk.Label(frame, text=texto, font=self.font_style, bg=self.bg_color, fg=self.button_color, anchor="w")
+            label.pack(side=tk.TOP, fill=tk.X)
+            
+            textarea = tk.Text(frame, font=self.font_style, width=self.entry_width, height=5, bg=self.entry_bg, fg=self.fg_color)
+            textarea.pack(side=tk.TOP, fill=tk.X, pady=(1, 0))
+            return textarea
+    
+
+    def enviar_info(self):
+                Correo.enviar(
+                    asunto=self.asunto.get(),
+                    contenido=self.contenido.get("1.0","end"),
+                    origen=self.origen.get(),
+                    password=self.contrasenia.get(),
+                    destino=self.destinatario.get(),
+                )  
 
     def mostrarCreditos(self):
         self.clear_frame()
-        tk.Label(self.principal, text="Créditos del Proyecto", font=("Arial", 16)).pack(pady=20)
+        self.bg_color = "#F5F7FA"  
+        self.fg_color = "#37474F" 
+        self.button_color = "#007BFF" 
+        self.button_PorEncima = "#0056b3"  
+        self.font_style = ("Monserrat", 15)
+        self.entry_width = 15
+        self.pad_y = 10
+        self.pad_x = 20
+        Texto(self.principal,"Hecho por: Álvaro,Marcos Beas,Diego","Monserrat",20,"top","#007BFF","bold") 
+        def enviar_clientes():
+            try:
+                conn = mysql.connector.connect(user="root", password="1234", host="localhost", database="proyectofn")
+                cursor = conn.cursor()
+                cursor.execute("SELECT * FROM CLIENTES")
+                datos=cursor.fetchall()
+                info = {
+                    'registros': datos
+                 }
+                generador=Pdf(info=info,nombreHtml="indexsecundario",nombreCss="indexsecundario",nombrePdf="clientes")
+                generador.crear_pdf()
+                conn.commit()
+                conn.close()
+                cursor.close()
+                self.clear_frame()  
+            except Exception as e:
+                messagebox.showerror("Error", f"No se pudo obtener los registros: {e}")
+        self.boton_clientes = tk.Button(
+            self.principal, text="Generar Clientes", font=self.font_style,
+            bg=self.button_color, fg="white", activebackground=self.button_PorEncima, activeforeground="white",
+            padx=10, pady=5, command=enviar_clientes
+        )
+        self.boton_clientes.pack(side=tk.TOP, pady=self.pad_y * 2)
 
-if __name__ == "__main__":
-    root = VentanaPrincipal(1000, 800, 700, 700, "Proyecto Final SGE 2ºDAM")
-    root.mainloop()
+
+        def enviar_empleados():
+            try:
+                conn = mysql.connector.connect(user="root", password="1234", host="localhost", database="proyectofn")
+                cursor = conn.cursor()
+                cursor.execute("SELECT * FROM EMPLEADOS")
+                datos=cursor.fetchall()
+                info = {
+                    'registros': datos
+                 }
+                generador=Pdf(info=info,nombreHtml="indexprimario",nombreCss="indexprimario",nombrePdf="empleados")
+                generador.crear_pdf()
+                conn.commit()
+                conn.close()
+                cursor.close()
+                self.clear_frame()  
+            except Exception as e:
+                messagebox.showerror("Error", f"No se pudo obtener los registros: {e}")
+
+
+
+        self.boton_empleados = tk.Button(
+            self.principal, text="Generar Empleados", font=self.font_style,
+            bg=self.button_color, fg="white", activebackground=self.button_PorEncima, activeforeground="white",
+            padx=10, pady=5, command=enviar_empleados
+        )
+        self.boton_empleados.pack(side=tk.TOP, pady=self.pad_y * 2)
+    
+       
+
+    def Cajas(self):
+        borde_color = self.color.Color_Cabecera_Principal 
+        borde_grosor = 1
+        #Cabecera
+        self.cabecera = tk.Frame(
+            self,
+            bg=self.color.get_Color_Cabecera_Principal(),
+            height=70,
+            highlightbackground=borde_color,
+            highlightcolor=borde_color,
+            highlightthickness=borde_grosor,
+            bd=3,
+            relief="ridge"
+        )
+        self.cabecera.pack(side=tk.TOP, fill="both") 
+
+        # Pie de página
+        self.pie = tk.Frame(
+            self,
+            bg=self.color.get_Color_Pie_Pagina(),
+            height=60,
+            highlightbackground=borde_color,
+            highlightcolor=borde_color,
+            highlightthickness=borde_grosor,
+            bd=3,
+            relief="ridge"
+        )
+        self.pie.pack(side=tk.BOTTOM,fill="x") 
+
+        # Panel izquierdo
+        self.izquierda = tk.Frame(
+            self,
+            bg=self.color.get_Color_Laterales(),
+            width=120,
+            highlightbackground=borde_color,
+            highlightcolor=borde_color,
+            highlightthickness=borde_grosor,
+            bd=3,
+            relief="ridge"
+        )
+        self.izquierda.pack(side=tk.LEFT, fill="y")  # Se expande solo verticalmente
+
+        # Panel derecho
+        self.derecha = tk.Frame(
+            self,
+            bg=self.color.get_Color_Laterales(),
+            width=120,
+            highlightbackground=borde_color,
+            highlightcolor=borde_color,
+            highlightthickness=borde_grosor,
+            bd=3,
+            relief="ridge"
+        )
+        self.derecha.pack(side=tk.RIGHT, fill="y")  # Se expande solo verticalmente
+
+        # Área principal
+        self.principal = tk.Frame(
+            self,
+            bg=self.color.get_Color_Principal(),
+            width=300,
+            height=200,
+            highlightbackground=borde_color,
+            highlightcolor=borde_color,
+            highlightthickness=borde_grosor,
+            bd=3,
+            relief="ridge"
+        )
+        self.principal.pack( expand=True, fill="both") 
+
+        Texto(seccion=self.cabecera,texto="Titulo Provisional hasta que se nos ocurra un titulo mejor",fuente="Monserrat",tamanio=18,posicion="top",color="white",bold="bold")
+  
+        self.btnOpcion1 = tk.Button(self.pie)
+        self.btnOpcion2 = tk.Button(self.pie)
+        self.btnOpcion3 = tk.Button(self.pie)
+        self.btnOpcion4 = tk.Button(self.pie)
+       
+        #Botones para las funciones
+        Buttons_Options = [
+            ("BBDD", self.btnOpcion1, self.cargarBBDD,self.color.Color_Boton_Primario), #Para crear empleado o cliente
+            ("Gráfica", self.btnOpcion2, self.cargarGrafica,self.color.Color_Boton_Secundario), #Ver la grafica
+            ("Correo", self.btnOpcion3, self.mandarCorreo,self.color.Color_Boton_Tercero), # Enviar Correo
+            ("Creditos Y PDF", self.btnOpcion4, self.mostrarCreditos,self.color.Color_Boton_Cuarto) #Creacion del Pdf
+        ]
+        for texto, boton, comando, color in Buttons_Options:
+            self.configurar_boton_menu(boton, texto, comando,color)
+
+
+    def configurar_boton_menu(self, boton, texto, comando,color):
+        boton.config(text=f"{texto}",bg=color,font=("Montserrat",15,"bold"),fg="white", width=10, command=comando,activebackground="purple",  borderwidth=0 )
+        boton.pack(side=tk.LEFT, padx=10, pady=5, expand=True, fill="both")
+        
+    #Funcion para limpiar el frame del medio
+    def clear_frame(self):
+        for widget in self.principal.winfo_children():
+            widget.destroy()
