@@ -109,7 +109,7 @@ class VentanaPrincipal(tk.Tk):
 
     def cargarGrafica(self):
         self.clear_frame()
-        
+  
     def mandarCorreo(self):
         self.clear_frame()
         # Configuración de estilo
@@ -129,53 +129,48 @@ class VentanaPrincipal(tk.Tk):
         self.origen = self.crear_label_entry("Origen")
         self.contrasenia = self.crear_label_entry("Contraseña", show="*")
         self.destinatario = self.crear_label_entry("Destinatario")
-        self.asunto = self.crear_label_entry("Asunto")
+        self.asunto = self.crear_label_entry("Asunto","")
         self.contenido =self.crear_label_textarea("Contenido")
-        
-        # Botón de enviar
+      
         self.boton_enviar = tk.Button(
             self.principal, text="Enviar Correo", font=self.font_style,
             bg=self.button_color, fg="white", activebackground=self.button_PorEncima, activeforeground="white",
             padx=10, pady=5, command=self.enviar_info
-        )
-        self.boton_enviar.pack(side=tk.TOP, pady=self.pad_y * 2)
-    
+            )
+        self.boton_enviar.pack(side=tk.TOP, pady=self.pad_y * 2)   
+
+
     def crear_label_entry(self, texto, show=None):
-        frame = tk.Frame(self.principal, bg=self.bg_color)
-        frame.pack(side=tk.TOP, pady=self.pad_y, fill=tk.X)
-        
-        label = tk.Label(frame, text=texto, font=self.font_style, bg=self.bg_color, fg=self.button_color, anchor="w")
-        label.pack(side=tk.TOP, fill=tk.X)
-        
-        entry = tk.Entry(frame, font=self.font_style, width=self.entry_width, bg= self.entry_bg, fg=self.fg_color, show=show)
-        entry.pack(side=tk.TOP, fill=tk.X, pady=(2, 0))
-        return entry
-    def crear_label_textarea(self, texto):
-        frame =tk.Frame(self.principal, bg=self.bg_color)
-        frame.pack(side=tk.TOP, pady=self.pad_y, fill=tk.X)
-        
-        label = tk.Label(frame, text=texto, font=self.font_style, bg=self.bg_color, fg=self.button_color, anchor="w")
-        label.pack(side=tk.TOP, fill=tk.X)
-        
-        textarea = tk.Text(frame, font=self.font_style, width=self.entry_width, height=5, bg=self.entry_bg, fg=self.fg_color)
-        textarea.pack(side=tk.TOP, fill=tk.X, pady=(2, 0))
-        return textarea
+            frame = tk.Frame(self.principal, bg=self.bg_color)
+            frame.pack(side=tk.TOP, pady=self.pad_y, fill=tk.X)
+            
+            label = tk.Label(frame, text=texto, font=self.font_style, bg=self.bg_color, fg=self.button_color, anchor="w")
+            label.pack(side=tk.TOP, fill=tk.X)
+            
+            entry = tk.Entry(frame, font=self.font_style, width=self.entry_width, bg= self.entry_bg, fg=self.fg_color, show=show)
+            entry.pack(side=tk.TOP, fill=tk.X, pady=(2, 0))
+            return entry
+    def crear_label_textarea(self, texto=""):
+            frame =tk.Frame(self.principal, bg=self.bg_color)
+            frame.pack(side=tk.TOP, pady=self.pad_y, fill=tk.X)
+            
+            label = tk.Label(frame, text=texto, font=self.font_style, bg=self.bg_color, fg=self.button_color, anchor="w")
+            label.pack(side=tk.TOP, fill=tk.X)
+            
+            textarea = tk.Text(frame, font=self.font_style, width=self.entry_width, height=5, bg=self.entry_bg, fg=self.fg_color)
+            textarea.pack(side=tk.TOP, fill=tk.X, pady=(2, 0))
+            return textarea
     
+
     def enviar_info(self):
-        
-        #Hacer un if y archivos que necesitemos
-        ruta1 = Pdf.darLaRutaMenosLaUltima("") + "indexprimario.html"
-        ruta2 = Pdf.darLaRutaMenosLaUltima("") + "indexsecundario.html"
-        archivos=[ruta1,ruta2]
-        Correo.enviar(
-            asunto=self.asunto.get(),
-            contenido=self.contenido.get(),
-            origen=self.origen.get(),
-            password=self.contrasenia.get(),
-            destino=self.destinatario.get(),
-            archivos=archivos
-        )
-        
+                Correo.enviar(
+                    asunto=self.asunto.get(),
+                    contenido=self.contenido.get("1.0","end"),
+                    origen=self.origen.get(),
+                    password=self.contrasenia.get(),
+                    destino=self.destinatario.get(),
+                )  
+
     def mostrarCreditos(self):
         self.clear_frame()
         self.bg_color = "#F5F7FA"  

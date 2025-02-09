@@ -15,7 +15,7 @@ class Correo():
                 with open(archivo, 'rb') as adjunto:
                     mensaje.add_attachment(adjunto.read(), maintype='application', filename=archivo)
 
-            with smtplib.SMTP("smtp01.educa.madrid.org", 587) as server:
+            with smtplib.SMTP('smtp01.educa.madrid.org', 587) as server:
                 server.starttls()
                 server.login(origen, password)
                 server.send_message(mensaje)
