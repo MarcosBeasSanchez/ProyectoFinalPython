@@ -2,11 +2,12 @@ import tkinter as tk
 from colores import ColoresAplicacion
 from text import Texto
 from correo import Correo
-from tkinter import ttk, messagebox
+from tkinter import messagebox
 import mysql.connector
+import threading
 from PdfCreacion import Pdf
 class VentanaPrincipal(tk.Tk):
-    def __init__(self, weight, height, x, y, title):
+    def __init__(self, weight, height, x, y, title,conn):
         super().__init__()
         self.weight = weight
         self.height = height
@@ -17,98 +18,14 @@ class VentanaPrincipal(tk.Tk):
         self.geometry("%dx%d+%d+%d" %(self.weight, self.height, self.x, self.y))
         self.title(self.miTitulo)
         self.resizable(False, False)
+        self.conn=conn
         self.Cajas()
 
 
     def cargarBBDD(self):
-        
-        self.clear_frame()  # Limpiar el área central antes de agregar un nuevo formulario
-
-        tk.Label(self.principal, text="Seleccione tipo de registro:", font=("Arial", 14)).pack(pady=10)
-
-        tipo_seleccionado = tk.StringVar()
-        tipo_combo = ttk.Combobox(self.principal, textvariable=tipo_seleccionado, values=["Empleado", "Cliente"])
-        tipo_combo.pack(pady=5)
-        """"Si luego en un futuro quieres mas lo cambias a switch"""
-        def abrir_formulario():
-            tipo = tipo_seleccionado.get()
-            if tipo == "Empleado":
-                self.formulario_empleado()
-            elif tipo == "Cliente":
-                self.formulario_cliente()
-            else:
-                messagebox.showwarning("Selección requerida", "Seleccione una opción válida")
-
-        tk.Button(self.principal, text="Continuar", command=abrir_formulario).pack(pady=10)
-
-    def formulario_empleado(self):
-        """Carga el formulario de empleados en la sección principal."""
-        self.clear_frame() 
-
-        tk.Label(self.principal, text="Agregar Empleado", font=("Arial", 16, "bold")).pack(pady=10)
-
-        labels = ["ID", "Nombre", "Apellidos", "DNI", "Teléfono", "Fecha Contratación", "Sueldo", "Comisión"]
-        entries = {}
-
-        for label in labels:
-            frame = tk.Frame(self.principal)
-            frame.pack(pady=5)
-            tk.Label(frame, text=label, width=20, anchor="w").pack(side=tk.LEFT)
-            entry = tk.Entry(frame)
-            entry.pack(side=tk.RIGHT, padx=10)
-            entries[label] = entry
-
-        def guardar_empleado():
-            datos = [entries[label].get() for label in labels]
-            try:
-               
-                conn = mysql.connector.connect(user="root", password="1234", host="localhost", database="proyectofn")
-                cursor = conn.cursor()
-                cursor.execute("INSERT INTO EMPLEADOS VALUES (%s, %s, %s, %s, %s, %s, %s, %s)", datos)
-                conn.commit()
-                conn.close()
-                messagebox.showinfo("Éxito", "Empleado agregado correctamente")
-                self.clear_frame()  
-            except Exception as e:
-                messagebox.showerror("Error", f"No se pudo agregar: {e}")
-
-        tk.Button(self.principal, text="Guardar", command=guardar_empleado).pack(pady=10)
-
-    def formulario_cliente(self):
-        """Carga el formulario de clientes en la sección principal."""
-        self.clear_frame()  
-
-        tk.Label(self.principal, text="Agregar Cliente", font=("Arial", 16, "bold")).pack(pady=10)
-
-        labels = ["ID", "NIF", "Nombre", "Apellidos", "Email", "Teléfono", "Cartera"]
-        entries = {}
-
-        for label in labels:
-            frame = tk.Frame(self.principal)
-            frame.pack(pady=5)
-            tk.Label(frame, text=label, width=20, anchor="w").pack(side=tk.LEFT)
-            entry = tk.Entry(frame)
-            entry.pack(side=tk.RIGHT, padx=10)
-            entries[label] = entry
-
-        def guardar_cliente():
-            datos = [entries[label].get() for label in labels]
-            try:
-                
-                conn = mysql.connector.connect(user="root", password="1234", host="localhost", database="proyectofn")
-                cursor = conn.cursor()
-                cursor.execute("INSERT INTO CLIENTES VALUES (%s, %s, %s, %s, %s, %s, %s)", datos)
-                conn.commit()
-                conn.close()
-                messagebox.showinfo("Éxito", "Cliente agregado correctamente")
-                self.clear_frame() 
-            except Exception as e:
-                messagebox.showerror("Error", f"No se pudo agregar: {e}")
-
-        tk.Button(self.principal, text="Guardar", command=guardar_cliente).pack(pady=10)
-
+        print("Cuando hagamos el merge lo junto")
     def cargarGrafica(self):
-        self.clear_frame()
+        print("Cuando hagamos el merge lo junto")
   
     def mandarCorreo(self):
         self.clear_frame()
@@ -119,8 +36,8 @@ class VentanaPrincipal(tk.Tk):
         self.entry_bg = "#FFFFFF"  # Entradas de texto blancas
         self.button_color = "#007BFF"  # Azul moderno
         self.button_PorEncima = "#0056b3"  # Azul oscuro
-        self.font_style = ("Monserrat", 15)
-        self.entry_width = 15
+        self.font_style = ("Monserrat", 10)
+        self.entry_width = 10
         self.pad_y = 10
         self.pad_x = 20
         
@@ -135,7 +52,7 @@ class VentanaPrincipal(tk.Tk):
         self.boton_enviar = tk.Button(
             self.principal, text="Enviar Correo", font=self.font_style,
             bg=self.button_color, fg="white", activebackground=self.button_PorEncima, activeforeground="white",
-            padx=10, pady=5, command=self.enviar_info
+            padx=10, pady=5, command=lambda:threading.Thread(target=self.enviar_info).start()        
             )
         self.boton_enviar.pack(side=tk.TOP, pady=self.pad_y * 2)   
 
@@ -150,6 +67,7 @@ class VentanaPrincipal(tk.Tk):
             entry = tk.Entry(frame, font=self.font_style, width=self.entry_width, bg= self.entry_bg, fg=self.fg_color, show=show)
             entry.pack(side=tk.TOP, fill=tk.X, pady=(2, 0))
             return entry
+    
     def crear_label_textarea(self, texto=""):
             frame =tk.Frame(self.principal, bg=self.bg_color)
             frame.pack(side=tk.TOP, pady=self.pad_y, fill=tk.X)
@@ -170,9 +88,11 @@ class VentanaPrincipal(tk.Tk):
                     password=self.contrasenia.get(),
                     destino=self.destinatario.get(),
                 )  
+                print("Correo enviado....")
 
     def mostrarCreditos(self):
         self.clear_frame()
+        
         self.bg_color = "#F5F7FA"  
         self.fg_color = "#37474F" 
         self.button_color = "#007BFF" 
@@ -184,8 +104,8 @@ class VentanaPrincipal(tk.Tk):
         Texto(self.principal,"Hecho por: Álvaro,Marcos Beas,Diego","Monserrat",20,"top","#007BFF","bold") 
         def enviar_clientes():
             try:
-                conn = mysql.connector.connect(user="root", password="1234", host="localhost", database="proyectofn")
-                cursor = conn.cursor()
+                self.conn = mysql.connector.connect(user="root", password="1234", host="localhost", database="proyectofn")
+                cursor = self.conn.cursor()
                 cursor.execute("SELECT * FROM CLIENTES")
                 datos=cursor.fetchall()
                 info = {
@@ -193,24 +113,24 @@ class VentanaPrincipal(tk.Tk):
                  }
                 generador=Pdf(info=info,nombreHtml="indexsecundario",nombreCss="indexsecundario",nombrePdf="clientes")
                 generador.crear_pdf()
-                conn.commit()
-                conn.close()
+                self.conn.commit()
+                self.conn.close()
                 cursor.close()
-                self.clear_frame()  
+                print("Creado el PDF....")  
             except Exception as e:
                 messagebox.showerror("Error", f"No se pudo obtener los registros: {e}")
         self.boton_clientes = tk.Button(
             self.principal, text="Generar Clientes", font=self.font_style,
             bg=self.button_color, fg="white", activebackground=self.button_PorEncima, activeforeground="white",
-            padx=10, pady=5, command=enviar_clientes
+            padx=10, pady=5, command=lambda:threading.Thread(target=enviar_clientes).start()
         )
         self.boton_clientes.pack(side=tk.TOP, pady=self.pad_y * 2)
 
 
         def enviar_empleados():
             try:
-                conn = mysql.connector.connect(user="root", password="1234", host="localhost", database="proyectofn")
-                cursor = conn.cursor()
+                self.conn = mysql.connector.connect(user="root", password="1234", host="localhost", database="proyectofn")
+                cursor = self.conn.cursor()
                 cursor.execute("SELECT * FROM EMPLEADOS")
                 datos=cursor.fetchall()
                 info = {
@@ -218,10 +138,10 @@ class VentanaPrincipal(tk.Tk):
                  }
                 generador=Pdf(info=info,nombreHtml="indexprimario",nombreCss="indexprimario",nombrePdf="empleados")
                 generador.crear_pdf()
-                conn.commit()
-                conn.close()
+                self.conn.commit()
+                self.conn.close()
                 cursor.close()
-                self.clear_frame()  
+                print("Creado el PDF....")    
             except Exception as e:
                 messagebox.showerror("Error", f"No se pudo obtener los registros: {e}")
 
@@ -230,7 +150,7 @@ class VentanaPrincipal(tk.Tk):
         self.boton_empleados = tk.Button(
             self.principal, text="Generar Empleados", font=self.font_style,
             bg=self.button_color, fg="white", activebackground=self.button_PorEncima, activeforeground="white",
-            padx=10, pady=5, command=enviar_empleados
+            padx=10, pady=5, command=lambda:threading.Thread(target=enviar_empleados).start()   
         )
         self.boton_empleados.pack(side=tk.TOP, pady=self.pad_y * 2)
     
