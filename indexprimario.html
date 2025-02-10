@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Ficha Empleado</title>
+    <link rel="stylesheet" href="indexprimario.css">
+</head>
+<body>
+     <table>
+      <caption>Empleados</caption>
+      <thead>
+      <tr>
+        <th>Id</th>
+        <th>Nombre</th>
+        <th>Apellidos</th>
+        <th>Dni</th>
+        <th>Telefono</th>
+        <th>Fecha_Contratacion</th>
+        <th>Sueldo</th>
+        <th>Comision</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for registro in registros %}
+                <tr>
+                    <td>{{registro[0]}}</td>
+                    <td>{{registro[1]}}</td>
+                    <td>{{registro[2]}}</td>
+                    <td>{{registro[3]}}</td>
+                    <td>{{registro[4]}}</td>
+                    <td>{{registro[5]}}</td>
+                    <td>{{registro[6]}}</td>
+                    <td>{{registro[7]}}</td>
+                </tr>
+      {% endfor %}
+    </tbody>
+     </table>
+     <img src="{{grafico}}"/>
+</body>
+</html>

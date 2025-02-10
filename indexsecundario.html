@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Ficha Cliente</title>
+    <link rel="stylesheet" href="indexsecundario.css">
+</head>
+<body>
+     <table>
+      <caption>Clientes</caption>
+      <thead>
+      <tr>
+        <th>Id</th>
+        <th>Nif</th>
+        <th>Nombre</th>
+        <th>Apellidos</th>
+        <th>Email</th>
+        <th>Telefono</th>
+        <th>Cartera</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for registro in registros %}
+                <tr>
+                    <td>{{registro[0]}}</td>
+                    <td>{{registro[1]}}</td>
+                    <td>{{registro[2]}}</td>
+                    <td>{{registro[3]}}</td>
+                    <td>{{registro[4]}}</td>
+                    <td>{{registro[5]}}</td>
+                    <td>{{registro[6]}}</td>
+                </tr>
+      {% endfor %}
+    </tbody>
+     </table>
+     <img src="{{grafico}}"/>
+</body>
+</html>

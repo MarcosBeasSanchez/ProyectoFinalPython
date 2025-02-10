@@ -5,11 +5,12 @@ from correo import Correo
 from tkinter import ttk, messagebox
 import mysql.connector
 from PdfCreacion import Pdf
-#from GeneradorGrafica import GeneradorGrafico 
+#from GeneradorGrafica import GeneradorGrafico
+import threading
 
 
 class VentanaPrincipal(tk.Tk):
-    def __init__(self, weight, height, x, y, title, id):
+    def __init__(self, weight, height, x, y, title, id, conn):
         super().__init__()
         self.weight = weight
         self.height = height
@@ -21,6 +22,7 @@ class VentanaPrincipal(tk.Tk):
         self.geometry("%dx%d+%d+%d" %(self.weight, self.height, self.x, self.y))
         self.title(self.miTitulo)
         self.resizable(False, False)
+        self.conn = conn
         self.Cajas()
 
 
@@ -193,6 +195,7 @@ class VentanaPrincipal(tk.Tk):
 
     def mostrarCreditos(self):
         self.clear_frame()
+        
         self.bg_color = "#F5F7FA"  
         self.fg_color = "#37474F" 
         self.button_color = "#007BFF" 
@@ -201,11 +204,12 @@ class VentanaPrincipal(tk.Tk):
         self.entry_width = 15
         self.pad_y = 10
         self.pad_x = 20
-        Texto(self.principal,"Hecho por: Álvaro,Marcos Beas,Diego","Monserrat",20,"top","#007BFF","bold") 
+        Texto(self.principal,"Hecho por: Álvaro,Marcos Beas,Diego","Monserrat",20,"top","#007BFF","bold")
+
         def enviar_clientes():
             try:
-                conn = mysql.connector.connect(user="root", password="1234", host="localhost", database="proyectofn")
-                cursor = conn.cursor()
+                self.conn = mysql.connector.connect(user="root", password="1234", host="localhost", database="proyectofn")
+                cursor = self.conn.cursor()
                 cursor.execute("SELECT * FROM CLIENTES")
                 datos=cursor.fetchall()
                 info = {
@@ -213,24 +217,24 @@ class VentanaPrincipal(tk.Tk):
                  }
                 generador=Pdf(info=info,nombreHtml="indexsecundario",nombreCss="indexsecundario",nombrePdf="clientes")
                 generador.crear_pdf()
-                conn.commit()
-                conn.close()
+                self.conn.commit()
+                self.conn.close()
                 cursor.close()
-                self.clear_frame()  
+                print("Creado el PDF....")  
             except Exception as e:
                 messagebox.showerror("Error", f"No se pudo obtener los registros: {e}")
         self.boton_clientes = tk.Button(
             self.principal, text="Generar Clientes", font=self.font_style,
             bg=self.button_color, fg="white", activebackground=self.button_PorEncima, activeforeground="white",
-            padx=10, pady=5, command=enviar_clientes
+            padx=10, pady=5, command=lambda:threading.Thread(target=enviar_clientes).start()
         )
         self.boton_clientes.pack(side=tk.TOP, pady=self.pad_y * 2)
 
 
         def enviar_empleados():
             try:
-                conn = mysql.connector.connect(user="root", password="1234", host="localhost", database="proyectofn")
-                cursor = conn.cursor()
+                self.conn = mysql.connector.connect(user="root", password="1234", host="localhost", database="proyectofn")
+                cursor = self.conn.cursor()
                 cursor.execute("SELECT * FROM EMPLEADOS")
                 datos=cursor.fetchall()
                 info = {
@@ -238,10 +242,10 @@ class VentanaPrincipal(tk.Tk):
                  }
                 generador=Pdf(info=info,nombreHtml="indexprimario",nombreCss="indexprimario",nombrePdf="empleados")
                 generador.crear_pdf()
-                conn.commit()
-                conn.close()
+                self.conn.commit()
+                self.conn.close()
                 cursor.close()
-                self.clear_frame()  
+                print("Creado el PDF....")    
             except Exception as e:
                 messagebox.showerror("Error", f"No se pudo obtener los registros: {e}")
 
@@ -250,7 +254,7 @@ class VentanaPrincipal(tk.Tk):
         self.boton_empleados = tk.Button(
             self.principal, text="Generar Empleados", font=self.font_style,
             bg=self.button_color, fg="white", activebackground=self.button_PorEncima, activeforeground="white",
-            padx=10, pady=5, command=enviar_empleados
+            padx=10, pady=5, command=lambda:threading.Thread(target=enviar_empleados).start()   
         )
         self.boton_empleados.pack(side=tk.TOP, pady=self.pad_y * 2)
     

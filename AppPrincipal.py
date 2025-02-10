@@ -86,7 +86,7 @@ def verificar_id():
     if resultado and resultado[0] > 0:  # Si el ID existe en la tabla JEFES
         messagebox.showinfo("Acceso Concedido", f"Bienvenido, {resultado[1]}.")
         root.destroy()
-        ventana_principal = VentanaPrincipal(800, 600, 700, 700, "Proyecto Final SGE 2ºDAM", resultado[1])
+        ventana_principal = VentanaPrincipal(800, 600, 700, 700, "Proyecto Final SGE 2ºDAM", resultado[1], "")
         ventana_principal.mainloop()
     else:
         messagebox.showerror("Acceso Denegado", "No tienes permisos para acceder.")
