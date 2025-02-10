@@ -30,7 +30,7 @@ class VentanaPrincipal(tk.Tk):
     def mandarCorreo(self):
         self.clear_frame()
         # Configuración de estilo
-        # Estilos
+        # Estilos para mandar correo
         self.bg_color = "#F5F7FA"  # Fondo principal
         self.fg_color = "#37474F"  # Texto gris oscuro azulado
         self.entry_bg = "#FFFFFF"  # Entradas de texto blancas
@@ -88,7 +88,6 @@ class VentanaPrincipal(tk.Tk):
                     password=self.contrasenia.get(),
                     destino=self.destinatario.get(),
                 )  
-                print("Correo enviado....")
 
     def mostrarCreditos(self):
         self.clear_frame()
