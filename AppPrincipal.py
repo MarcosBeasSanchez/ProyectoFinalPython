@@ -23,7 +23,8 @@ def crear_base_de_datos():
                 ID INT PRIMARY KEY AUTO_INCREMENT,
                 Nombre VARCHAR(50),
                 Apellido VARCHAR(50),
-                DNI VARCHAR(10) UNIQUE NOT NULL
+                DNI VARCHAR(10) UNIQUE NOT NULL,
+                Correo VARCHAR(50)
             )
         """)
 
@@ -60,8 +61,8 @@ def crear_base_de_datos():
 
         if existe_jefe == 0:
             cursor.execute("""
-                INSERT INTO JEFES (ID, Nombre, Apellido, DNI) 
-                VALUES (1, 'Administrador', 'Principal', '00000000A')
+                INSERT INTO JEFES (ID, Nombre, Apellido, DNI, Correo) 
+                VALUES (1, 'Administrador', 'Principal', '00000000A', 'inventado@gmail.com')
             """)
             print("Jefe predeterminado creado.")
 
@@ -99,7 +100,7 @@ root.title("Inicio de Sesión")
 root.geometry("300x150")
 
 #Lo ponemos asi para que lo sepa el profe, Si quires hacer añadir otro jefe no lo puedes hacer por aqui 
-tk.Label(root, text="Ingrese su ID de Jefe(Predeterminado 1=Administrador):").pack(pady=5)
+tk.Label(root, text="Ingrese su ID de Jefe(Prete 1=Administrador):").pack(pady=5)
 entrada_id = tk.Entry(root)
 entrada_id.pack(pady=5)
 
