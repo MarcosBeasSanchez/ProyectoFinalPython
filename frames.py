@@ -9,13 +9,14 @@ from PdfCreacion import Pdf
 
 
 class VentanaPrincipal(tk.Tk):
-    def __init__(self, weight, height, x, y, title):
+    def __init__(self, weight, height, x, y, title, id):
         super().__init__()
         self.weight = weight
         self.height = height
         self.x = x
         self.y = y
         self.miTitulo = title
+        self.id = id
         self.color=ColoresAplicacion()
         self.geometry("%dx%d+%d+%d" %(self.weight, self.height, self.x, self.y))
         self.title(self.miTitulo)
@@ -113,47 +114,62 @@ class VentanaPrincipal(tk.Tk):
     def cargarGrafica(self):
         self.clear_frame()
 
-        
     def mandarCorreo(self):
         self.clear_frame()
-        # Configuración de estilo
-        # Estilos
-        self.bg_color = "#F5F7FA"  # Fondo principal
-        self.fg_color = "#37474F"  # Texto gris oscuro azulado
-        self.entry_bg = "#FFFFFF"  # Entradas de texto blancas
-        self.button_color = "#007BFF"  # Azul moderno
-        self.button_PorEncima = "#0056b3"  # Azul oscuro
+
+        # Configuración de estilos
+        self.bg_color = "#F5F7FA"  
+        self.fg_color = "#37474F"  
+        self.entry_bg = "#FFFFFF"  
+        self.button_color = "#007BFF"  
+        self.button_PorEncima = "#0056b3"  
         self.font_style = ("Monserrat", 10)  
         self.entry_width = 10  
         self.pad_y = 8  
-        self.pad_x = 16  
-        
-        
-        # Crear campos
-        self.origen = self.crear_label_entry("Origen")
+        self.pad_x = 16
+
+        # Obtener el correo del jefe desde la base de datos
+        try:
+            conn = mysql.connector.connect(user="root", password="1234", host="localhost", database="proyectofn")
+            cursor = conn.cursor()
+            cursor.execute("SELECT Correo FROM JEFES WHERE ID = %s", (self.id,))
+            resultado = cursor.fetchone()
+            correo_jefe = resultado[0] if resultado else ""
+            conn.close()
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo obtener el correo del jefe: {e}")
+            correo_jefe = ""
+
+        # Crear campos con el correo cargado automáticamente
+        self.origen = self.crear_label_entry("Origen", default_text=correo_jefe)
         self.contrasenia = self.crear_label_entry("Contraseña", show="*")
         self.destinatario = self.crear_label_entry("Destinatario")
-        self.asunto = self.crear_label_entry("Asunto","")
-        self.contenido =self.crear_label_textarea("Contenido")
-      
+        self.asunto = self.crear_label_entry("Asunto")
+        self.contenido = self.crear_label_textarea("Contenido")
+
         self.boton_enviar = tk.Button(
-            self.principal, text="Enviar Correo", font=self.font_style,
-            bg=self.button_color, fg="white", activebackground=self.button_PorEncima, activeforeground="white",
-            padx=10, pady=5, command=self.enviar_info
-            )
-        self.boton_enviar.pack(side=tk.TOP, pady=self.pad_y * 2)   
+        self.principal, text="Enviar Correo", font=self.font_style,
+        bg=self.button_color, fg="white", activebackground=self.button_PorEncima, activeforeground="white",
+        padx=10, pady=5, command=self.enviar_info
+        )
+        self.boton_enviar.pack(side=tk.TOP, pady=self.pad_y * 2)
 
 
-    def crear_label_entry(self, texto, show=None):
-            frame = tk.Frame(self.principal, bg=self.bg_color)
-            frame.pack(side=tk.TOP, pady=self.pad_y, fill=tk.X)
-            
-            label = tk.Label(frame, text=texto, font=self.font_style, bg=self.bg_color, fg=self.button_color, anchor="w")
-            label.pack(side=tk.TOP, fill=tk.X)
-            
-            entry = tk.Entry(frame, font=self.font_style, width=self.entry_width, bg= self.entry_bg, fg=self.fg_color, show=show)
-            entry.pack(side=tk.TOP, fill=tk.X, pady=(1, 0))
-            return entry
+    def crear_label_entry(self, texto, show=None, default_text=""):
+        frame = tk.Frame(self.principal, bg=self.bg_color)
+        frame.pack(side=tk.TOP, pady=self.pad_y, fill=tk.X)
+
+        label = tk.Label(frame, text=texto, font=self.font_style, bg=self.bg_color, fg=self.button_color, anchor="w")
+        label.pack(side=tk.TOP, fill=tk.X)
+
+        entry = tk.Entry(frame, font=self.font_style, width=self.entry_width, bg=self.entry_bg, fg=self.fg_color, show=show)
+    
+        if default_text:  # Si hay un texto por defecto, se inserta en el campo
+            entry.insert(0, default_text)
+
+        entry.pack(side=tk.TOP, fill=tk.X, pady=(1, 0))
+        return entry
+
     def crear_label_textarea(self, texto=""):
             frame =tk.Frame(self.principal, bg=self.bg_color)
             frame.pack(side=tk.TOP, pady=self.pad_y, fill=tk.X)
