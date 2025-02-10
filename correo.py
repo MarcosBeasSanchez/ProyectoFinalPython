@@ -19,6 +19,7 @@ class Correo():
                 server.starttls()
                 server.login(origen, password)
                 server.send_message(mensaje)
+                server.close()
 
             print("Correo enviado correctamente.")
         except Exception as e:

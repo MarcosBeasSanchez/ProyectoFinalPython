@@ -2,10 +2,13 @@ import tkinter as tk
 from colores import ColoresAplicacion
 from text import Texto
 from correo import Correo
-from tkinter import messagebox
+from tkinter import ttk, messagebox
 import mysql.connector
-import threading
 from PdfCreacion import Pdf
+from generadorGrafico import GeneradorGrafico
+import threading
+
+
 class VentanaPrincipal(tk.Tk):
     def __init__(self, weight, height, x, y, title,conn):
         super().__init__()
@@ -14,60 +17,170 @@ class VentanaPrincipal(tk.Tk):
         self.x = x
         self.y = y
         self.miTitulo = title
+        self.id = id
         self.color=ColoresAplicacion()
         self.geometry("%dx%d+%d+%d" %(self.weight, self.height, self.x, self.y))
         self.title(self.miTitulo)
         self.resizable(False, False)
-        self.conn=conn
+        self.conn = conn
+        self.gfRoute=""
         self.Cajas()
 
 
     def cargarBBDD(self):
-        print("Cuando hagamos el merge lo junto")
+        
+        self.clear_frame()  
+
+        tk.Label(self.principal, text="Seleccione tipo de registro:", font=("Arial", 14)).pack(pady=10)
+
+        tipo_seleccionado = tk.StringVar()
+        tipo_combo = ttk.Combobox(self.principal, textvariable=tipo_seleccionado, values=["Empleado", "Cliente"])
+        tipo_combo.pack(pady=5)
+        """"Si luego en un futuro quieres mas lo cambias a switch"""
+        def abrir_formulario():
+            tipo = tipo_seleccionado.get()
+            if tipo == "Empleado":
+                self.formulario_empleado()
+            elif tipo == "Cliente":
+                self.formulario_cliente()
+            else:
+                messagebox.showwarning("Selección requerida", "Seleccione una opción válida")
+
+        tk.Button(self.principal, text="Continuar", command=abrir_formulario).pack(pady=10)
+
+    def formulario_empleado(self):
+        """Carga el formulario de empleados en la sección principal."""
+        self.clear_frame() 
+
+        tk.Label(self.principal, text="Agregar Empleado", font=("Arial", 16, "bold")).pack(pady=10)
+
+        labels = ["ID", "Nombre", "Apellidos", "DNI", "Teléfono", "Fecha Contratación (yyyy-MM-dd)", "Sueldo", "Comisión"]
+        entries = {}
+
+        #Un for de label, donde coges una lista con la info y la vas escribiendo una por una para guardar el resultado en otra lista
+        for label in labels:
+            frame = tk.Frame(self.principal)
+            frame.pack(pady=5)
+            tk.Label(frame, text=label, width=20, anchor="w").pack(side=tk.LEFT)
+            entry = tk.Entry(frame)
+            entry.pack(side=tk.RIGHT, padx=10)
+            entries[label] = entry
+
+        def guardar_empleado():
+            datos = [entries[label].get() for label in labels]
+            try:
+                conn = mysql.connector.connect(user="root", password="1234", host="localhost", database="proyectofn")
+                cursor = conn.cursor()
+                cursor.execute("INSERT INTO EMPLEADOS VALUES (%s, %s, %s, %s, %s, %s, %s, %s)", datos)
+                conn.commit()
+                conn.close()
+                messagebox.showinfo("Éxito", "Empleado agregado correctamente")
+                self.clear_frame()  
+            except Exception as e:
+                messagebox.showerror("Error", f"No se pudo agregar: {e}")
+
+        tk.Button(self.principal, text="Guardar", command=guardar_empleado).pack(pady=10)
+
+    def formulario_cliente(self):
+        """Carga el formulario de clientes en la sección principal."""
+        self.clear_frame()  
+
+        tk.Label(self.principal, text="Agregar Cliente", font=("Arial", 16, "bold")).pack(pady=10)
+
+        labels = ["ID", "NIF", "Nombre", "Apellidos", "Email", "Teléfono", "Cartera"]
+        entries = {}
+
+        for label in labels:
+            frame = tk.Frame(self.principal)
+            frame.pack(pady=5)
+            tk.Label(frame, text=label, width=20, anchor="w").pack(side=tk.LEFT)
+            entry = tk.Entry(frame)
+            entry.pack(side=tk.RIGHT, padx=10)
+            entries[label] = entry
+
+        def guardar_cliente():
+            datos = [entries[label].get() for label in labels]
+            try:
+                
+                conn = mysql.connector.connect(user="root", password="1234", host="localhost", database="proyectofn")
+                cursor = conn.cursor()
+                cursor.execute("INSERT INTO CLIENTES VALUES (%s, %s, %s, %s, %s, %s, %s)", datos)
+                conn.commit()
+                conn.close()
+                messagebox.showinfo("Éxito", "Cliente agregado correctamente")
+                self.clear_frame() 
+            except Exception as e:
+                messagebox.showerror("Error", f"No se pudo agregar: {e}")
+
+        tk.Button(self.principal, text="Guardar", command=guardar_cliente).pack(pady=10)
+
     def cargarGrafica(self):
-        print("Cuando hagamos el merge lo junto")
-  
+        self.clear_frame()
+        self.bg_color = "#F5F7FA"  
+        self.pad_y = 8  
+        self.pad_x = 16
+        try:
+            conn = mysql.connector.connect(user="root", password="1234", host="localhost", database="proyectofn")
+            cursor = conn.cursor()
+            cursor.execute("SELECT sueldo FROM EMPLEADOS")
+            ingresos=cursor.fetchone()
+            cursor.execute("SELECT cartera FROM CLIENTES")
+            gastos=cursor.fetchone()
+            tags = ["INGRESOS TRABAJADORES", "GASTOS CLIENTES"]
+            gf=GeneradorGrafico(gastos=ingresos,ingresos=gastos,tags=tags)
+            self.gfRoute=gf.crearGrafico()
+            frame = tk.Frame(self.principal, bg=self.bg_color)
+            frame.pack(side=tk.TOP, pady=self.pad_y, fill=tk.X)
+            gf.display_graph_in_frame(frame,self.gfRoute)
+            conn.close()
+            messagebox.showinfo("Grafica generada :)","Se muestra la grafica ....") 
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo agregar: {e} , o no tienes insertado el empleado o cliente")
+
     def mandarCorreo(self):
         self.clear_frame()
-        # Configuración de estilo
-        # Estilos para mandar correo
-        self.bg_color = "#F5F7FA"  # Fondo principal
-        self.fg_color = "#37474F"  # Texto gris oscuro azulado
-        self.entry_bg = "#FFFFFF"  # Entradas de texto blancas
-        self.button_color = "#007BFF"  # Azul moderno
-        self.button_PorEncima = "#0056b3"  # Azul oscuro
-        self.font_style = ("Monserrat", 10)
-        self.entry_width = 10
-        self.pad_y = 10
-        self.pad_x = 20
-        
-        
-        # Crear campos
+
+        # Configuración de estilos
+        self.bg_color = "#F5F7FA"  
+        self.fg_color = "#37474F"  
+        self.entry_bg = "#FFFFFF"  
+        self.button_color = "#007BFF"  
+        self.button_PorEncima = "#0056b3"  
+        self.font_style = ("Monserrat", 10)  
+        self.entry_width = 10  
+        self.pad_y = 8  
+        self.pad_x = 16
+
+        # Crear campos con el correo cargado automáticamente
         self.origen = self.crear_label_entry("Origen")
         self.contrasenia = self.crear_label_entry("Contraseña", show="*")
         self.destinatario = self.crear_label_entry("Destinatario")
-        self.asunto = self.crear_label_entry("Asunto","")
-        self.contenido =self.crear_label_textarea("Contenido")
-      
+        self.asunto = self.crear_label_entry("Asunto")
+        self.contenido = self.crear_label_textarea("Contenido")
+
         self.boton_enviar = tk.Button(
-            self.principal, text="Enviar Correo", font=self.font_style,
-            bg=self.button_color, fg="white", activebackground=self.button_PorEncima, activeforeground="white",
-            padx=10, pady=5, command=lambda:threading.Thread(target=self.enviar_info).start()        
-            )
-        self.boton_enviar.pack(side=tk.TOP, pady=self.pad_y * 2)   
+        self.principal, text="Enviar Correo", font=self.font_style,
+        bg=self.button_color, fg="white", activebackground=self.button_PorEncima, activeforeground="white",
+        padx=10, pady=5, command=self.enviar_info
+        )
+        self.boton_enviar.pack(side=tk.TOP, pady=self.pad_y * 2)
 
 
-    def crear_label_entry(self, texto, show=None):
-            frame = tk.Frame(self.principal, bg=self.bg_color)
-            frame.pack(side=tk.TOP, pady=self.pad_y, fill=tk.X)
-            
-            label = tk.Label(frame, text=texto, font=self.font_style, bg=self.bg_color, fg=self.button_color, anchor="w")
-            label.pack(side=tk.TOP, fill=tk.X)
-            
-            entry = tk.Entry(frame, font=self.font_style, width=self.entry_width, bg= self.entry_bg, fg=self.fg_color, show=show)
-            entry.pack(side=tk.TOP, fill=tk.X, pady=(2, 0))
-            return entry
+    def crear_label_entry(self, texto, show=None, default_text=""):
+        frame = tk.Frame(self.principal, bg=self.bg_color)
+        frame.pack(side=tk.TOP, pady=self.pad_y, fill=tk.X)
+
+        label = tk.Label(frame, text=texto, font=self.font_style, bg=self.bg_color, fg=self.button_color, anchor="w")
+        label.pack(side=tk.TOP, fill=tk.X)
+
+        entry = tk.Entry(frame, font=self.font_style, width=self.entry_width, bg=self.entry_bg, fg=self.fg_color, show=show)
     
+        if default_text:  # Si hay un texto por defecto, se inserta en el campo
+            entry.insert(0, default_text)
+
+        entry.pack(side=tk.TOP, fill=tk.X, pady=(1, 0))
+        return entry
+
     def crear_label_textarea(self, texto=""):
             frame =tk.Frame(self.principal, bg=self.bg_color)
             frame.pack(side=tk.TOP, pady=self.pad_y, fill=tk.X)
@@ -76,7 +189,7 @@ class VentanaPrincipal(tk.Tk):
             label.pack(side=tk.TOP, fill=tk.X)
             
             textarea = tk.Text(frame, font=self.font_style, width=self.entry_width, height=5, bg=self.entry_bg, fg=self.fg_color)
-            textarea.pack(side=tk.TOP, fill=tk.X, pady=(2, 0))
+            textarea.pack(side=tk.TOP, fill=tk.X, pady=(1, 0))
             return textarea
     
 
@@ -100,7 +213,8 @@ class VentanaPrincipal(tk.Tk):
         self.entry_width = 15
         self.pad_y = 10
         self.pad_x = 20
-        Texto(self.principal,"Hecho por: Álvaro,Marcos Beas,Diego","Monserrat",20,"top","#007BFF","bold") 
+        Texto(self.principal,"Hecho por: Álvaro,Marcos Beas,Diego","Monserrat",20,"top","#007BFF","bold")
+
         def enviar_clientes():
             try:
                 self.conn = mysql.connector.connect(user="root", password="1234", host="localhost", database="proyectofn")
@@ -108,7 +222,8 @@ class VentanaPrincipal(tk.Tk):
                 cursor.execute("SELECT * FROM CLIENTES")
                 datos=cursor.fetchall()
                 info = {
-                    'registros': datos
+                    'registros': datos,
+                    'grafico':self.gfRoute
                  }
                 generador=Pdf(info=info,nombreHtml="indexsecundario",nombreCss="indexsecundario",nombrePdf="clientes")
                 generador.crear_pdf()
@@ -224,19 +339,19 @@ class VentanaPrincipal(tk.Tk):
         )
         self.principal.pack( expand=True, fill="both") 
 
-        Texto(seccion=self.cabecera,texto="Titulo Provisional hasta que se nos ocurra un titulo mejor",fuente="Monserrat",tamanio=18,posicion="top",color="white",bold="bold")
+        Texto(seccion=self.cabecera,texto="Empresa de Gestion de Clientes y Empleados",fuente="Monserrat",tamanio=18,posicion="top",color="white",bold="bold")
   
         self.btnOpcion1 = tk.Button(self.pie)
         self.btnOpcion2 = tk.Button(self.pie)
         self.btnOpcion3 = tk.Button(self.pie)
         self.btnOpcion4 = tk.Button(self.pie)
        
-
+        #Botones para las funciones
         Buttons_Options = [
-            ("BBDD", self.btnOpcion1, self.cargarBBDD,self.color.Color_Boton_Primario), 
-            ("Gráfica", self.btnOpcion2, self.cargarGrafica,self.color.Color_Boton_Secundario),
-            ("Correo", self.btnOpcion3, self.mandarCorreo,self.color.Color_Boton_Tercero),
-            ("Creditos Y PDF", self.btnOpcion4, self.mostrarCreditos,self.color.Color_Boton_Cuarto)
+            ("BBDD", self.btnOpcion1, self.cargarBBDD,self.color.Color_Boton_Primario), #Para crear empleado o cliente
+            ("Gráfica", self.btnOpcion2, self.cargarGrafica,self.color.Color_Boton_Secundario), #Ver la grafica
+            ("Correo", self.btnOpcion3, self.mandarCorreo,self.color.Color_Boton_Tercero), # Enviar Correo
+            ("Creditos Y PDF", self.btnOpcion4, self.mostrarCreditos,self.color.Color_Boton_Cuarto) #Creacion del Pdf
         ]
         for texto, boton, comando, color in Buttons_Options:
             self.configurar_boton_menu(boton, texto, comando,color)
@@ -246,7 +361,7 @@ class VentanaPrincipal(tk.Tk):
         boton.config(text=f"{texto}",bg=color,font=("Montserrat",15,"bold"),fg="white", width=10, command=comando,activebackground="purple",  borderwidth=0 )
         boton.pack(side=tk.LEFT, padx=10, pady=5, expand=True, fill="both")
         
-    
+    #Funcion para limpiar el frame del medio
     def clear_frame(self):
         for widget in self.principal.winfo_children():
             widget.destroy()
