@@ -3,6 +3,7 @@ from tkinter import messagebox
 import mysql.connector
 from frames import VentanaPrincipal
 
+
 def crear_base_de_datos():
     """Crea la base de datos, las tablas y un jefe predeterminado si no existen."""
     try:

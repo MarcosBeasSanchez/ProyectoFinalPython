@@ -14,16 +14,18 @@ class GeneradorGrafico:
         color_rojo = "#ff0505"  # Color rojo
         color_verde = "#2bff05"  # Color verde
     
-        # Crear la gráfica 
-        if self.ingresos > self.gastos:
-            plt.bar(x_positions[1], self.gastos, width=bar_width, label="Gastos", color=color_rojo, alpha=0.8)
-            plt.bar(x_positions[0], self.ingresos, width=bar_width, label="Ingresos", color=color_verde, alpha=0.8)
+        total_ingresos = sum([i[0] for i in self.ingresos])
+        total_gastos = sum([g[0] for g in self.gastos])
+
+        if total_ingresos > total_gastos:
+            plt.bar(x_positions[1], total_gastos, width=bar_width, label="Gastos", color=color_rojo, alpha=0.8)
+            plt.bar(x_positions[0], total_ingresos, width=bar_width, label="Ingresos", color=color_verde, alpha=0.8)
         else:
-            plt.bar(x_positions[0], self.ingresos, width=bar_width, label="Ingresos", color=color_rojo, alpha=0.8)
-            plt.bar(x_positions[1], self.gastos, width=bar_width, label="Gastos", color=color_verde, alpha=0.8)
+            plt.bar(x_positions[0], total_ingresos, width=bar_width, label="Ingresos", color=color_rojo, alpha=0.8)
+            plt.bar(x_positions[1], total_gastos, width=bar_width, label="Gastos", color=color_verde, alpha=0.8)
 
         # Personalización del gráfico
-        plt.style.use("fast")  # Color de fondo
+        plt.style.use("seaborn-whitegrid")
         plt.title("INGRESOS Y GASTOS", fontsize=16, fontweight="bold", color="black")
         plt.ylabel("EUROS €", fontsize=10,color="black",fontweight="bold")
         plt.xticks(ticks=x_positions, labels=self.tags ,color="black",fontsize=9)
@@ -33,7 +35,7 @@ class GeneradorGrafico:
         # Guardar y mostrar la gráfica
         graph_route = "./grafico.png"
         plt.savefig(graph_route)
-        #plt.show()
+        plt.show()
         plt.clf()
         plt.close()
         return graph_route

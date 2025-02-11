@@ -116,24 +116,25 @@ class VentanaPrincipal(tk.Tk):
 
     def cargarGrafica(self):
         self.clear_frame()
-        self.bg_color = "#F5F7FA"  
-        self.pad_y = 8  
+        self.bg_color = "#F5F7FA"
+        self.pad_y = 8
         self.pad_x = 16
         try:
             conn = mysql.connector.connect(user="root", password="1234", host="localhost", database="proyectofn")
             cursor = conn.cursor()
             cursor.execute("SELECT sueldo FROM EMPLEADOS")
-            ingresos=cursor.fetchone()
+            ingresos = cursor.fetchall()
             cursor.execute("SELECT cartera FROM CLIENTES")
-            gastos=cursor.fetchone()
+            gastos = cursor.fetchall()
             tags = ["INGRESOS TRABAJADORES", "GASTOS CLIENTES"]
-            gf=GeneradorGrafico(gastos=ingresos,ingresos=gastos,tags=tags)
-            self.gfRoute=gf.crearGrafico()
+
+            gf = GeneradorGrafico(ingresos=ingresos, gastos=gastos, tags=tags)
+            self.gfRoute = gf.crearGrafico()
             frame = tk.Frame(self.principal, bg=self.bg_color)
             frame.pack(side=tk.TOP, pady=self.pad_y, fill=tk.X)
-            gf.display_graph_in_frame(frame,self.gfRoute)
+            gf.display_graph_in_frame(frame, self.gfRoute)
             conn.close()
-            messagebox.showinfo("Grafica generada :)","Se muestra la grafica ....") 
+            messagebox.showinfo("Grafica generada :)", "Se muestra la grafica ....")
         except Exception as e:
             messagebox.showerror("Error", f"No se pudo agregar: {e} , o no tienes insertado el empleado o cliente")
 
