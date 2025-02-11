@@ -1,0 +1,25 @@
+TABLA EMPLEADOS
+    ID_Empleado (clave primaria)-string
+    Nombre-string
+    Apellidos-string
+    DNI-string
+    Teléfono_Móvil-string
+    Fecha_Contratación-Date
+    sueldo-Float
+    comision-Float
+-------------------
+TABLA JEFES
+    ID_Jefe (clave primaria)
+    Nombre-string
+    Apellidos-string
+    sueldo-float
+-------------------
+TABLA CLIENTES
+    ID_Cliente (clave primaria)
+    NIF-string
+    Nombre-string
+    Apellidos-string
+    Email-string
+    Teléfono-string
+    cartera-float
+

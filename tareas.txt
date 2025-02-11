@@ -1,0 +1,37 @@
+ALVARO-->
+Creación de la interface de usuario con tkinter y frames.
+Trabajo con procesos.
+• Utilización de Clases generadas en documentos diferentes.
+        ◦ Herencia de clases.
+        ◦ Sobrescribir métodos.
+
+Generar informes en formato pdf desde un environment con diferentes plantillas
+
+
+---------
+
+DIEGO-->
+
+Conexión a una Base de Datos.
+Envío de correos electrónicos.
+Trabajo con procesos.
+
+• Utilización de Clases generadas en documentos diferentes.
+        ◦ Herencia de clases.
+        ◦ Sobrescribir métodos.
+---------
+
+MARCOS-->
+
+Trabajo con procesos.
+Utilización de MathPlotLib.
+• Utilización de Clases generadas en documentos diferentes.
+        ◦ Herencia de clases.
+        ◦ Sobrescribir métodos.
+
+La mente pensante del Github
+
+
+
+
+IMPORTANTE->LA CONTRASEÑA DE LA BBDD ES 1234 Y EL USUSARIO ES ROOT,POR SI NO LO TIENES IGUAL MARIO
