@@ -32,6 +32,6 @@ Utilización de MathPlotLib.
 La mente pensante del Github
 
 
-
+URL DEL GITHUB:https://github.com/MarcosBeasSanchez/ProyectoFinalPython.git
 
 IMPORTANTE->LA CONTRASEÑA DE LA BBDD ES 1234 Y EL USUSARIO ES ROOT,POR SI NO LO TIENES IGUAL MARIO
